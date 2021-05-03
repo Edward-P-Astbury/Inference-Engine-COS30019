@@ -5,7 +5,11 @@
 #include "BackwardChaining.h"
 
 /*
-    Authors: Edward Astbury (102579434)
+    Authors: Lane Macdonald (101614172) & Edward Astbury (102579434)
+
+    We would like to acknowledge the COS30019 teaching staff for their support throughout
+    the duration of the project. All of our external sources/acknowledgements have been appropriately
+    listed in the report section of this assignment.
 */
 
 using namespace std;
