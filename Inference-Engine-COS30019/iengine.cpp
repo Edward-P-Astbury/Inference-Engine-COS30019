@@ -4,6 +4,10 @@
 #include "ForwardChaining.h"
 #include "BackwardChaining.h"
 
+/*
+    Authors: Edward Astbury (102579434)
+*/
+
 using namespace std;
 
 int main(int argc, char* argv[])
