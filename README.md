@@ -1,3 +1,3 @@
 # Inference-Engine-COS30019
 
-The full documentation can be found under the 'main' branch, this branch is purely for development
+The Assignment 2 - Inference Engine by Lane Macdonald & Edward Astbury
