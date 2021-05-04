@@ -19,7 +19,7 @@ void TruthTable::GenerateTable(int aNumberOfClauses)
 		{
 			int v = i & 1 << aNumberOfClauses - 1 - j;
 
-			fGrid[i][j] = (v == 0 ? true : false);
+			//fGrid[i][j] = (v == 0 ? true : false);
 
 			std::cout << (v == 0 ? "T" : "F");
 		}
