@@ -7,6 +7,8 @@ TruthTable::TruthTable(std::vector<std::string> aClauses, std::vector<std::strin
 	fClauses = aClauses;
 	fQuery = aQuery;
 	GenerateTable(fClauses.size());
+	GetQuery(fQuery[0]);
+	SolveTable();
 }
 
 void TruthTable::GenerateTable(int aNumberOfClauses)
@@ -19,21 +21,25 @@ void TruthTable::GenerateTable(int aNumberOfClauses)
 		{
 			int v = i & 1 << aNumberOfClauses - 1 - j;
 
-			//fGrid[i][j] = (v == 0 ? true : false);
-
 			std::cout << (v == 0 ? "T" : "F");
 		}
 		std::cout << "\n";
 	}
 }
 
-void TruthTable::SolveTable(std::string aQuery)
+void TruthTable::SolveTable()
+{
+	// begin by extracting the string that matches the query
+}
+
+std::string TruthTable::GetQuery(std::string aQuery)
 {
 	for (std::string& s : fClauses)
 	{
 		if (s.find(aQuery))	// find the query within all the clauses
 		{
-			std::cout << s << std::endl;
+			std::cout << aQuery << std::endl;
+			return aQuery;
 		}
 	}
 }
