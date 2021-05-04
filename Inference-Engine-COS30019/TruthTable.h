@@ -12,6 +12,6 @@ public:
 	TruthTable(std::vector<std::string> aClauses, std::vector<std::string> aQuery);
 	void GenerateTable(int aNumberOfClauses);
 	void SolveTable();
-	std::string GetQuery(std::string aQuery);
+	void GetQuery(std::string aQuery);
 };
 

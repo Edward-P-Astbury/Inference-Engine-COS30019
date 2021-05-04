@@ -32,14 +32,13 @@ void TruthTable::SolveTable()
 	// begin by extracting the string that matches the query
 }
 
-std::string TruthTable::GetQuery(std::string aQuery)
+void TruthTable::GetQuery(std::string aQuery)
 {
 	for (std::string& s : fClauses)
 	{
-		if (s.find(aQuery))	// find the query within all the clauses
+		if (s.find(aQuery) != std::string::npos)
 		{
-			std::cout << aQuery << std::endl;
-			return aQuery;
+			std::cout << s << std::endl;
 		}
 	}
 }
