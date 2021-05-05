@@ -11,7 +11,7 @@ private:
 
 public:
 	TruthTable(std::vector<std::string> aClauses, std::vector<std::string> aQuery);
-	void GenerateTable(int aNumberOfClauses);
+	void GenerateTable();
 	void SolveTable();
 	bool Implication(bool aLHS, bool aRHS);
 	std::string GetQuery(std::string aQuery);

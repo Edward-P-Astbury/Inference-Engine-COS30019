@@ -14,29 +14,30 @@ TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 {
 	fClauses = aClauses;
 	fQuery = aQuery;
-	GenerateTable(fClauses.size());
 	GetQuery(fQuery[0]);
 	SolveTable();
 	AddVariables();
 	Sort();
-	cout << "\n\nprint\n" << endl;
-	PrintVar();
+	GenerateTable();
 }
 
-void TruthTable::GenerateTable(int aNumberOfClauses)
+void TruthTable::GenerateTable()
 {
-	int lNumberOfOptions = pow(2, aNumberOfClauses);
+	int count = 0;
+	int lNumberOfOptions = pow(2, fVariables.size());
 
 	for (int i = 0; i < lNumberOfOptions; i++)
 	{
-		for (int j = 0; j < aNumberOfClauses; j++)
+		for (int j = 0; j < fVariables.size(); j++)
 		{
-			int v = i & 1 << aNumberOfClauses - 1 - j;
+			int v = i & 1 << fVariables.size() - 1 - j;
 
 			cout << (v == 0 ? "T" : "F");
 		}
 		cout << "\n";
+		count++;
 	}
+	cout << count << endl;
 }
 
 void TruthTable::SolveTable()
@@ -67,7 +68,7 @@ void TruthTable::SolveTable()
 
 	int lNumberOfSymbols = lTempCount + lConclusion.length();
 
-	GenerateTable(lNumberOfSymbols);
+	//GenerateTable();
 }
 
 bool TruthTable::Implication(bool aLHS, bool aRHS)
