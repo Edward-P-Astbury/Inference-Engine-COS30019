@@ -2,13 +2,15 @@
 #include <cmath>
 #include <iostream>
 
+using namespace std;
+
 struct sLogicalConnectives
 {
-	std::string IMPLICATION = "=>";
-	std::string AND = "&";
+	string IMPLICATION = "=>";
+	string AND = "&";
 }; sLogicalConnectives sLogicConnective;
 
-TruthTable::TruthTable(std::vector<std::string> aClauses, std::vector<std::string> aQuery)
+TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 {
 	fClauses = aClauses;
 	fQuery = aQuery;
@@ -16,6 +18,9 @@ TruthTable::TruthTable(std::vector<std::string> aClauses, std::vector<std::strin
 	GetQuery(fQuery[0]);
 	SolveTable();
 	AddVariables();
+	Sort();
+	cout << "\n\nprint\n" << endl;
+	PrintVar();
 }
 
 void TruthTable::GenerateTable(int aNumberOfClauses)
@@ -28,29 +33,29 @@ void TruthTable::GenerateTable(int aNumberOfClauses)
 		{
 			int v = i & 1 << aNumberOfClauses - 1 - j;
 
-			std::cout << (v == 0 ? "T" : "F");
+			cout << (v == 0 ? "T" : "F");
 		}
-		std::cout << "\n";
+		cout << "\n";
 	}
 }
 
 void TruthTable::SolveTable()
 {
 	// begin by extracting the string that matches the query
-	std::string lQuery = GetQuery(fQuery[0]);
+	string lQuery = GetQuery(fQuery[0]);
 	int lIndex = lQuery.find(sLogicConnective.IMPLICATION);
 
-	std::string lPremise;
-	std::string lConclusion;
+	string lPremise;
+	string lConclusion;
 
 	if (lQuery.find(sLogicConnective.IMPLICATION))
 	{
-		std::cout << "Implication check" << std::endl;
+		cout << "Implication check" << endl;
 
 		lPremise = lQuery.substr(0, lIndex);
 		lConclusion = lQuery.substr(lIndex + sLogicConnective.IMPLICATION.length(), lQuery.length());
 
-		std::cout << "Premise: " << lPremise << " Conclusion: " << lConclusion << std::endl;
+		cout << "Premise: " << lPremise << " Conclusion: " << lConclusion << endl;
 	}
 
 	int lTempCount = 1;
@@ -77,13 +82,13 @@ bool TruthTable::Implication(bool aLHS, bool aRHS)
 		return true;
 }
 
-std::string TruthTable::GetQuery(std::string aQuery)
+string TruthTable::GetQuery(string aQuery)
 {
-	for (std::string& s : fClauses)
+	for (string& s : fClauses)
 	{
-		if (s.find(aQuery) != std::string::npos)
+		if (s.find(aQuery) != string::npos)
 		{
-			//std::cout << s << std::endl;
+			//std::cout << s << endl;
 			return s;
 		}
 	}
@@ -91,35 +96,73 @@ std::string TruthTable::GetQuery(std::string aQuery)
 
 void TruthTable::AddVariables()
 {
-	for (std::string& s : fClauses)
+	for (string& s : fClauses)
 	{
-		if (s.find(sLogicConnective.AND) != std::string::npos)
+		bool complete = false;
+		string var = s;
+
+		while (!complete)
 		{
-			// split the string up so we can get the variable before and after the '&' and '=>'
-			std::string lVariableLeftOfAnd;
-			std::string lVariableRightOfAnd;
-			std::string lVariableAfterImplication;
-			int lIndex = s.find(sLogicConnective.AND);
-
-			lVariableLeftOfAnd = s.substr(0, lIndex);
-
-			std::string lTemp = s.substr(lIndex + 1); // e.g. p3=>c or g=>h
-
-			lVariableRightOfAnd = lTemp.substr(0, lTemp.find(sLogicConnective.IMPLICATION));
-
-			lVariableAfterImplication = lTemp.substr(lTemp.find(sLogicConnective.IMPLICATION) + sLogicConnective.IMPLICATION.length(), lTemp.length());
-
-			std::cout << "Left side of &: " << lVariableLeftOfAnd << "\t" << " Right side of &: " << lVariableRightOfAnd << "\t" << " After => " << lVariableAfterImplication << std::endl;
-
-			// push back element into vector after extracting variables
+			var = CheckAmpersand(var);
+			var = CheckImplication(var);
+			if (CheckAmpersand(var) == CheckImplication(var))
+			{
+				fVariables.push_back(var);
+				complete = true;
+			}
 		}
-		else if (s.find(sLogicConnective.IMPLICATION) != std::string::npos)
+	}
+}
+
+string TruthTable::CheckAmpersand(string& aString)
+{
+	string var = aString;
+
+	if (aString.find(sLogicConnective.AND) != string::npos)
+	{
+		size_t lIndex = aString.find(sLogicConnective.AND);
+		var = aString.substr(0, lIndex);
+		fVariables.push_back(var);
+		var = aString.substr(lIndex + 1);
+	}
+
+	return var;
+}
+
+string TruthTable::CheckImplication(string& aString)
+{
+	string var = aString;
+
+	if (aString.find(sLogicConnective.IMPLICATION) != string::npos)
+	{
+		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);	
+		var = aString.substr(0, lIndex);
+		fVariables.push_back(var);
+		var = aString.substr(lIndex + 2);
+	}
+
+	return var;
+}
+
+void TruthTable::Sort()
+{
+	//delete multiple elements of the same type in fVariables
+	for (int i = 0; i < fVariables.size(); i++)
+	{
+		for (int j = 1 + i; j < fVariables.size(); j++)
 		{
-			// logic
+			if (fVariables[i] == fVariables[j])
+			{
+				fVariables.erase(fVariables.begin() + j);
+			}
 		}
-		else
-		{
-			// logic for single variable with no symbol
-		}
+	}
+}
+
+void TruthTable::PrintVar()
+{
+	for (string& s : fVariables)
+	{
+		cout << s << endl;
 	}
 }

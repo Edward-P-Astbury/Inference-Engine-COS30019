@@ -16,5 +16,9 @@ public:
 	bool Implication(bool aLHS, bool aRHS);
 	std::string GetQuery(std::string aQuery);
 	void AddVariables();
+	std::string CheckAmpersand(std::string& aString);
+	std::string CheckImplication(std::string& aString);
+	void Sort();
+	void PrintVar();
 };
 
