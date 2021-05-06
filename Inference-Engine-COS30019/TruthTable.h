@@ -8,10 +8,10 @@ private:
 	std::vector<std::string> fClauses;
 	std::vector<std::string> fQuery;
 	std::vector<std::string> fVariables;
+	std::vector<std::string> fSubClauses;
 	std::vector<std::vector<bool>> fTTvariables;
 	std::vector<std::vector<bool>> fTTSubClauses;
 	std::vector<std::vector<bool>> fKB;
-
 
 public:
 	TruthTable(std::vector<std::string> aClauses, std::vector<std::string> aQuery);
@@ -27,5 +27,6 @@ public:
 	void PrintVar();
 	void PrintTTVar();
 	void DevelopKnowledgeBase();
+	void PrintAndSubClause();
 };
 
