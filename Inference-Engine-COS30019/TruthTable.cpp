@@ -190,3 +190,9 @@ void TruthTable::PrintTTVar()
 		cout << "\n";
 	}
 }
+
+void TruthTable::DevelopKnowledgeBase()
+{
+	//map fTTVariable wit fSubclauses to the fVariable order
+
+}

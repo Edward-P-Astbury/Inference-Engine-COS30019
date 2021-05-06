@@ -10,6 +10,8 @@ private:
 	std::vector<std::string> fVariables;
 	std::vector<std::vector<bool>> fTTvariables;
 	std::vector<std::vector<bool>> fTTSubClauses;
+	std::vector<std::vector<bool>> fKB;
+
 
 public:
 	TruthTable(std::vector<std::string> aClauses, std::vector<std::string> aQuery);
@@ -23,5 +25,6 @@ public:
 	void Sort();
 	void PrintVar();
 	void PrintTTVar();
+	void DevelopKnowledgeBase();
 };
 
