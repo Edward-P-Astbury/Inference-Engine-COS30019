@@ -8,6 +8,7 @@ private:
 	std::vector<std::string> fClauses;
 	std::vector<std::string> fQuery;
 	std::vector<std::string> fVariables;
+	std::vector<std::string> fSubClauses;
 
 public:
 	TruthTable(std::vector<std::string> aClauses, std::vector<std::string> aQuery);
@@ -18,7 +19,9 @@ public:
 	void AddVariables();
 	std::string CheckAmpersand(std::string& aString);
 	std::string CheckImplication(std::string& aString);
+	std::string GetAndSubClause(std::string& aString);
 	void Sort();
 	void PrintVar();
+	void PrintAndSubClause();
 };
 

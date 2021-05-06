@@ -19,6 +19,7 @@ TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 	AddVariables();
 	Sort();
 	GenerateTable();
+	PrintAndSubClause();
 }
 
 void TruthTable::GenerateTable()
@@ -101,6 +102,15 @@ void TruthTable::AddVariables()
 	{
 		bool complete = false;
 		string var = s;
+		string subVar = s;
+
+		//GetAndSubClause(s);
+		subVar = GetAndSubClause(subVar);
+
+		if (subVar != "")
+		{
+			fSubClauses.push_back(subVar);
+		}
 
 		while (!complete)
 		{
@@ -112,6 +122,8 @@ void TruthTable::AddVariables()
 				complete = true;
 			}
 		}
+
+		fSubClauses.push_back(s);
 	}
 }
 
@@ -145,9 +157,25 @@ string TruthTable::CheckImplication(string& aString)
 	return var;
 }
 
+std::string TruthTable::GetAndSubClause(std::string& aString)
+{
+	string var = aString;
+
+	// if the string contains a '&' then we want the entire string prior to the '=>'
+	if (aString.find(sLogicConnective.AND) != string::npos)
+	{
+		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
+		var = aString.substr(0, lIndex);
+
+		return var;
+	}
+
+	return "";
+}
+
 void TruthTable::Sort()
 {
-	//delete multiple elements of the same type in fVariables
+	// delete multiple elements of the same type in fVariables
 	for (int i = 0; i < fVariables.size(); i++)
 	{
 		for (int j = 1 + i; j < fVariables.size(); j++)
@@ -165,5 +193,13 @@ void TruthTable::PrintVar()
 	for (string& s : fVariables)
 	{
 		cout << s << endl;
+	}
+}
+
+void TruthTable::PrintAndSubClause()
+{
+	for (string& s : fSubClauses)
+	{
+		cout << "Sub clauses including AND part of string in loop " << s << endl;
 	}
 }
