@@ -1,6 +1,7 @@
 #include "TruthTable.h"
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 	AddVariables();
 	Sort();
 	GenerateTable();
+	PrintTTVar();
 }
 
 void TruthTable::GenerateTable()
@@ -28,13 +30,23 @@ void TruthTable::GenerateTable()
 
 	for (int i = 0; i < lNumberOfOptions; i++)
 	{
+		vector<bool> lVar = {};
+
 		for (int j = 0; j < fVariables.size(); j++)
 		{
 			int v = i & 1 << fVariables.size() - 1 - j;
 
-			cout << (v == 0 ? "T" : "F");
+			if (v == 0)
+			{
+				lVar.push_back(false);
+			}
+			else
+			{
+				lVar.push_back(true);
+			}
 		}
-		cout << "\n";
+
+		fTTvariables.push_back(lVar);
 		count++;
 	}
 	cout << count << endl;
@@ -165,5 +177,17 @@ void TruthTable::PrintVar()
 	for (string& s : fVariables)
 	{
 		cout << s << endl;
+	}
+}
+
+void TruthTable::PrintTTVar()
+{
+	for (int i = 0; i < pow(2, fVariables.size()); i++)
+	{
+		for (int j = 0; j < fVariables.size(); j++)
+		{
+			cout << fTTvariables[i][j];
+		}
+		cout << "\n";
 	}
 }
