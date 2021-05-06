@@ -1,6 +1,7 @@
 #include "TruthTable.h"
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
@@ -18,24 +19,33 @@ TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 	SolveTable();
 	AddVariables();
 	Sort();
-	GenerateTable();
-	PrintAndSubClause();
+	GenerateTable(pow(2, fVariables.size()), fVariables.size());
+	PrintTTVar();
 }
 
-void TruthTable::GenerateTable()
+void TruthTable::GenerateTable(int aNumberOfOptions, int aSize)
 {
 	int count = 0;
-	int lNumberOfOptions = pow(2, fVariables.size());
 
-	for (int i = 0; i < lNumberOfOptions; i++)
+	for (int i = 0; i < aNumberOfOptions; i++)
 	{
-		for (int j = 0; j < fVariables.size(); j++)
-		{
-			int v = i & 1 << fVariables.size() - 1 - j;
+		vector<bool> lVar = {};
 
-			cout << (v == 0 ? "T" : "F");
+		for (int j = 0; j < aSize; j++)
+		{
+			int v = i & 1 << aSize - 1 - j;
+
+			if (v == 0)
+			{
+				lVar.push_back(false);
+			}
+			else
+			{
+				lVar.push_back(true);
+			}
 		}
-		cout << "\n";
+
+		fTTvariables.push_back(lVar);
 		count++;
 	}
 	cout << count << endl;
@@ -194,6 +204,24 @@ void TruthTable::PrintVar()
 	{
 		cout << s << endl;
 	}
+}
+
+void TruthTable::PrintTTVar()
+{
+	for (int i = 0; i < pow(2, fVariables.size()); i++)
+	{
+		for (int j = 0; j < fVariables.size(); j++)
+		{
+			cout << fTTvariables[i][j];
+		}
+		cout << "\n";
+	}
+}
+
+void TruthTable::DevelopKnowledgeBase()
+{
+	//map fTTVariable wit fSubclauses to the fVariable order
+
 }
 
 void TruthTable::PrintAndSubClause()
