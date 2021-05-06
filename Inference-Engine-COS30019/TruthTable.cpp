@@ -391,5 +391,5 @@ void TruthTable::Query()
 		}
 		
 	}
-	cout << "YES:\t" << count / (pow(2,9)) << endl;
+	cout << count << "\tYES:\t" << count / (pow(2,9)) << endl;
 }
