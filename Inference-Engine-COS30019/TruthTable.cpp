@@ -26,6 +26,7 @@ TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 	PrintAndSubClause();
 	DevelopKnowledgeBase();
 	PrintKB();
+	Query();
 }
 
 void TruthTable::GenerateTable(int aNumberOfOptions, int aSize)
@@ -362,4 +363,33 @@ void TruthTable::PrintKB()
 		count++;
 	}
 	cout << "count:\t" << count << endl;
+}
+
+void TruthTable::Query()
+{
+	string lQuery = fQuery[0];
+
+	cout << lQuery << endl;
+	int lLocation = 0;
+	for (int i = 0; i < fVariables.size(); i++)
+	{
+		if (lQuery == fVariables[i])
+		{
+			lLocation = i;
+			cout << i << endl;
+		}
+	}
+	int count = 0;
+	bool lQ;
+	for (int i = 0; i < pow(2, fVariables.size()); i++)
+	{
+		//MANUALLY ENTERED POSITION INSTEAD OF SEARCHED!!!!!!!!!!!
+		lQ = fKB[7][i];
+		if (lQ)
+		{
+			count++;
+		}
+		
+	}
+	cout << "YES:\t" << count / (pow(2,9)) << endl;
 }

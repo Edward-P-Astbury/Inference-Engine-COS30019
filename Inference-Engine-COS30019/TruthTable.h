@@ -9,6 +9,7 @@ private:
 	std::vector<std::string> fQuery;
 	std::vector<std::string> fVariables;
 	std::vector<std::string> fSubClauses;
+	std::vector<std::string> fQuerySearch;
 	std::vector<std::vector<bool>> fTTvariables;
 	std::vector<std::vector<bool>> fTTSubClauses;
 	std::vector<std::vector<bool>> fKB;
@@ -31,5 +32,6 @@ public:
 	void PrintAndSubClause();
 	void PrintClauses();
 	void PrintKB();
+	void Query();
 };
 
