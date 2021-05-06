@@ -19,22 +19,21 @@ TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 	SolveTable();
 	AddVariables();
 	Sort();
-	GenerateTable();
+	GenerateTable(pow(2, fVariables.size()), fVariables.size());
 	PrintTTVar();
 }
 
-void TruthTable::GenerateTable()
+void TruthTable::GenerateTable(int aNumberOfOptions, int aSize)
 {
 	int count = 0;
-	int lNumberOfOptions = pow(2, fVariables.size());
 
-	for (int i = 0; i < lNumberOfOptions; i++)
+	for (int i = 0; i < aNumberOfOptions; i++)
 	{
 		vector<bool> lVar = {};
 
-		for (int j = 0; j < fVariables.size(); j++)
+		for (int j = 0; j < aSize; j++)
 		{
-			int v = i & 1 << fVariables.size() - 1 - j;
+			int v = i & 1 << aSize - 1 - j;
 
 			if (v == 0)
 			{
