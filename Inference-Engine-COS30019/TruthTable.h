@@ -18,6 +18,7 @@ public:
 	void GenerateTable(int aNumberOfOptions, int aSize);
 	void SolveTable();
 	bool Implication(bool aLHS, bool aRHS);
+	bool Amp(bool aLHS, bool aRHS);
 	std::string GetQuery(std::string aQuery);
 	void AddVariables();
 	std::string CheckAmpersand(std::string& aString);
@@ -28,5 +29,7 @@ public:
 	void PrintTTVar();
 	void DevelopKnowledgeBase();
 	void PrintAndSubClause();
+	void PrintClauses();
+	void PrintKB();
 };
 
