@@ -9,6 +9,7 @@ private:
 	std::vector<std::string> fQuery;
 	std::vector<std::string> fVariables;
 	std::vector<std::string> fSubClauses;
+	std::vector<std::string> fQuerySearch;
 	std::vector<std::vector<bool>> fTTvariables;
 	std::vector<std::vector<bool>> fTTSubClauses;
 	std::vector<std::vector<bool>> fKB;
@@ -18,6 +19,7 @@ public:
 	void GenerateTable(int aNumberOfOptions, int aSize);
 	void SolveTable();
 	bool Implication(bool aLHS, bool aRHS);
+	bool Amp(bool aLHS, bool aRHS);
 	std::string GetQuery(std::string aQuery);
 	void AddVariables();
 	std::string CheckAmpersand(std::string& aString);
@@ -28,5 +30,8 @@ public:
 	void PrintTTVar();
 	void DevelopKnowledgeBase();
 	void PrintAndSubClause();
+	void PrintClauses();
+	void PrintKB();
+	void Query();
 };
 
