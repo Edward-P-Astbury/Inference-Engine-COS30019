@@ -46,6 +46,34 @@ std::string BackwardChaining::FactOutput()
 
 bool BackwardChaining::FactValidation()
 {
+	string lInitialQuery;
+
+	for (int i = 0; i < fHornClause.size(); i++)
+	{
+		string lTempImplication;
+
+		size_t lIndex = fHornClause[i].find(sLogicConnectiveBC.IMPLICATION);
+		lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
+
+		if (lTempImplication.find(fQuery[0]) != string::npos)
+		{
+			lInitialQuery = fHornClause[i];
+		}
+	}
+
+	// we need to initially check whether or not the list of clauses contains the query we wish to prove
+	// if it does not then there is no way to satisfy the remaining clauses, so we return false
+	// otherwise we can enter the core loop and proceed with the algorithm
+	if (find(fHornClause.begin(), fHornClause.end(), lInitialQuery) != fHornClause.end())
+	{
+		//cout << "found element" << endl;
+	}
+	else
+	{
+		//cout << "cannot find element" << endl;
+		return false;
+	}
+
 	// place the initial query into the list
 	fClausesLoop.insert(fClausesLoop.begin(), fQuery[0]);
 
