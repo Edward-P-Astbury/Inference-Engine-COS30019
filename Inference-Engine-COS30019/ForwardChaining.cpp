@@ -9,7 +9,7 @@ struct sLogicalConnectives
 	string AND = "&";
 }; sLogicalConnectives sLogicConnectiveFC;
 
-ForwardChaining::ForwardChaining(std::vector<std::string> aClauses, std::vector<std::string> aQuery)
+ForwardChaining::ForwardChaining(std::vector<std::string> aClauses, std::string aQuery)
 {
 	fClauses = aClauses;
 	fQuery = aQuery;
@@ -38,7 +38,7 @@ std::string ForwardChaining::FactOutput()
 	}
 	else
 	{
-		lPrintResult = "NO: " + fQuery[0] + " could not be proven.";
+		//lPrintResult = "NO: " + fQuery[0] + " could not be proven.";
 	}
 
 	return lPrintResult;
@@ -57,7 +57,7 @@ bool ForwardChaining::FactValidation()
 		fResultFacts.push_back(lFact);
 
 		// return true if the current variable matches the query
-		if (lFact == fQuery[0])
+		if (lFact == fQuery)
 		{
 			//cout << "Variable matches query" << endl;
 			return true;

@@ -1,8 +1,9 @@
 #include <iostream>
 #include "LoadFile.h"
-#include "TruthTable.h"
+//#include "TruthTable.h"
 #include "ForwardChaining.h"
 #include "BackwardChaining.h"
+#include "TT.h"
 
 /*
     Authors: Lane Macdonald (101614172) & Edward Astbury (102579434)
@@ -29,11 +30,12 @@ int main(int argc, char* argv[])
     LoadFile lFile(lFileName);  // load file into program
 
     lFile.ReadFile();
+    lFile.Set();
 
     // testing implementation
     if (lMethod == "TT")
     {
-        TruthTable TT(lFile.GetClauses(), lFile.GetQuery());
+        TT TT(lFile.GetClauses(), lFile.GetQuery(), lFile.GetSymbols());
     }
     else if (lMethod == "FC")
     {
