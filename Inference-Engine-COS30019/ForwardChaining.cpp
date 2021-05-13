@@ -63,29 +63,48 @@ bool ForwardChaining::FactValidation()
 			return true;
 		}
 
+		cout << "Fact being checked " << lFact << endl;
+
+		//for (string& s : fResultFacts)
+		//{
+			//cout << "The current result facts " << s << endl;
+		//}
+
 		for (int i = 0; i < fHornClause.size(); i++)
 		{
+
+			cout << "Current clauses " << fHornClause[i] << endl;
+
 			if(fHornClause[i].find(lFact) != string::npos)
 			{
-				if(fHornClause[i].find(sLogicConnectiveFC.AND) != string::npos)
+				if(fHornClause[i].find(sLogicConnectiveFC.AND) != string::npos) /////
 				{
+					//cout << "Clause with & " << fHornClause[i] << endl;
+
 					size_t lIndexAnd = fHornClause[i].find(sLogicConnectiveFC.AND);
 
-					string lTemp = fHornClause[i].substr(lIndexAnd + 1);
+					string lTempValueAfterAnd = fHornClause[i].substr(lIndexAnd + 1);
 
-					size_t lIndexImplication = lTemp.find(sLogicConnectiveFC.IMPLICATION);
+					size_t lIndexImplication = lTempValueAfterAnd.find(sLogicConnectiveFC.IMPLICATION);
 
-					lTemp = lTemp.substr(0, lIndexImplication);
+					lTempValueAfterAnd = lTempValueAfterAnd.substr(0, lIndexImplication);
+
+					string lTempValueBeforeAnd = fHornClause[i].substr(0, lIndexAnd); /////
+
+					//cout << "Value before & " << lTempValueBeforeAnd << endl;
+					//cout << "Value after & " << lTempValueAfterAnd << endl;
 
 					// say we have the string 'b&e=>f', it has now been trimmed to the value after the '&', in this case 'e'
 					// 
 					// need to check whether the value after the '&', in this case 'e' is part of the current facts. 
 					// If it is, then we can push back 'f', the value after the implication into the list of facts.
 					// We are then done with that particular horn clause (it has been checked) therefore we can erase it
-					for (int j = 0; j < fFacts.size(); j++)
+					for (int j = 0; j < fResultFacts.size(); j++) ///// change to fFacts and not fResultFacts
 					{
-						if (fFacts[j] == lTemp)
+						if (fResultFacts[j] == lTempValueAfterAnd)  ///// change to fFacts and not fResultFacts
 						{
+							//fFacts.push_back(lTempValueBeforeAnd); /////
+
 							string lTempImplication;
 
 							size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
