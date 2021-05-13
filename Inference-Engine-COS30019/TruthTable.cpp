@@ -4,13 +4,7 @@
 #include <vector>
 
 using namespace std;
-
-struct sLogicalConnectives
-{
-	string IMPLICATION = "=>";
-	string AND = "&";
-}; sLogicalConnectives sLogicConnective;
-
+/*
 TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 {
 	fClauses = aClauses;
@@ -263,7 +257,7 @@ void TruthTable::DevelopKnowledgeBase()
 		{
 			cout << var << endl;
 		}
-*/		if (lLHS != "" && lRHS != "")
+		if (lLHS != "" && lRHS != "")
 		{
 			for (int t = 0; t < fVariables.size(); t++)
 			{
@@ -328,7 +322,7 @@ void TruthTable::PrintAndSubClause()
 	cout << "\n\nsubclauses\n";
 	for (string& s : fSubClauses)
 	{
-		cout << /*"Sub clauses including AND part of string in loop " <<*/ s << endl;
+		cout << /*"Sub clauses including AND part of string in loop " << s << endl;
 	}
 }
 
@@ -369,22 +363,33 @@ void TruthTable::Query()
 {
 	string lQuery = fQuery[0];
 
-	cout << lQuery << endl;
+	cout << "Query\t" << lQuery << endl;
 	int lLocation = 0;
 	for (int i = 0; i < fVariables.size(); i++)
 	{
 		if (lQuery == fVariables[i])
 		{
 			lLocation = i;
-			cout << i << endl;
+			cout << "i\t" << i << " " << fVariables[i] << endl;
 		}
 	}
 	int count = 0;
 	bool lQ;
+	lLocation = 7;	//*******************
+	for (int j = 0; j < fVariables.size(); j++)
+	{
+		if (fSubClauses[j] == fQuery[0])
+		{
+			lLocation = 7;	//*******************
+			cout << "loc = " << j << endl;
+		}
+	}
+
 	for (int i = 0; i < pow(2, fVariables.size()); i++)
 	{
 		//MANUALLY ENTERED POSITION INSTEAD OF SEARCHED!!!!!!!!!!!
-		lQ = fKB[7][i];
+		lQ = fKB[lLocation][i];	//d = 7
+		
 		if (lQ)
 		{
 			count++;
@@ -393,3 +398,4 @@ void TruthTable::Query()
 	}
 	cout << count << "\tYES:\t" << count / (pow(2,9)) << endl;
 }
+*/

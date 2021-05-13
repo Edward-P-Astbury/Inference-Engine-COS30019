@@ -4,6 +4,12 @@
 
 using namespace std;
 
+struct sLogicalConnectives
+{
+	string IMPLICATION = "=>";
+	string AND = "&";
+}; sLogicalConnectives sLogicConnective;
+
 LoadFile::LoadFile(std::string aFileName)
 {
 	fFileName = aFileName;
@@ -38,16 +44,20 @@ void LoadFile::ReadFile()
 		}
 
 		lClause = lClause.substr(0, lClause.length() - 1);
-		cout << lClause << endl;
 		fClauses.push_back(lClause);
 	}
 
 	while (!lInFile.eof())
 	{
 		lInFile >> lTell;
-		fQuery.push_back(lTell);
-		cout << "\nTell\t" << lTell << endl;
+		fQuery = lTell;
 	}
+}
+
+void LoadFile::Set()
+{
+	AddVariables();
+	Sort();
 }
 
 std::vector<std::string> LoadFile::GetClauses()
@@ -55,7 +65,96 @@ std::vector<std::string> LoadFile::GetClauses()
 	return fClauses;
 }
 
-std::vector<std::string> LoadFile::GetQuery()
+std::string LoadFile::GetQuery()
 {
 	return fQuery;
+}
+
+std::vector<std::string> LoadFile::GetSymbols()
+{
+	return fSymbols;
+}
+
+void LoadFile::AddVariables()
+{
+	for (string& s : fClauses)
+	{
+		bool complete = false;
+		string lvar = s;
+		string lsubVar = s;
+
+		lsubVar = GetAndSubClause(lsubVar);
+
+		while (!complete)
+		{
+			lvar = CheckAmpersand(lvar);
+			lvar = CheckImplication(lvar);
+			if (CheckAmpersand(lvar) == CheckImplication(lvar))
+			{
+				fSymbols.push_back(lvar);
+				complete = true;
+			}
+		}
+	}
+}
+
+string LoadFile::CheckAmpersand(string& aString)
+{
+	string var = aString;
+
+	if (aString.find(sLogicConnective.AND) != string::npos)
+	{
+		size_t lIndex = aString.find(sLogicConnective.AND);
+		var = aString.substr(0, lIndex);
+		fSymbols.push_back(var);
+		var = aString.substr(lIndex + 1);
+	}
+
+	return var;
+}
+
+string LoadFile::CheckImplication(string& aString)
+{
+	string var = aString;
+
+	if (aString.find(sLogicConnective.IMPLICATION) != string::npos)
+	{
+		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
+		var = aString.substr(0, lIndex);
+		fSymbols.push_back(var);
+		var = aString.substr(lIndex + 2);
+	}
+
+	return var;
+}
+
+std::string LoadFile::GetAndSubClause(std::string& aString)
+{
+	string var = aString;
+
+	// if the string contains a '&' then we want the entire string prior to the '=>'
+	if (aString.find(sLogicConnective.AND) != string::npos)
+	{
+		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
+		var = aString.substr(0, lIndex);
+
+		return var;
+	}
+
+	return "";
+}
+
+void LoadFile::Sort()
+{
+	// delete multiple elements of the same type in fVariables
+	for (int i = 0; i < fSymbols.size(); i++)
+	{
+		for (int j = 1 + i; j < fSymbols.size(); j++)
+		{
+			if (fSymbols[i] == fSymbols[j])
+			{
+				fSymbols.erase(fSymbols.begin() + j);
+			}
+		}
+	}
 }

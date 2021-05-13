@@ -9,7 +9,7 @@ struct sLogicalConnectives
 	string AND = "&";
 }; sLogicalConnectives sLogicConnectiveBC;
 
-BackwardChaining::BackwardChaining(std::vector<std::string> aClauses, std::vector<std::string> aQuery)
+BackwardChaining::BackwardChaining(std::vector<std::string> aClauses, std::string aQuery)
 {
 	fClauses = aClauses;
 	fQuery = aQuery;
@@ -38,7 +38,7 @@ std::string BackwardChaining::FactOutput()
 	}
 	else
 	{
-		lPrintResult = "NO: " + fQuery[0] + " could not be proven.";
+		//lPrintResult = "NO: " + fQuery[0] + " could not be proven.";
 	}
 
 	return lPrintResult;
@@ -75,7 +75,7 @@ bool BackwardChaining::FactValidation()
 	}
 
 	// place the initial query into the list
-	fClausesLoop.insert(fClausesLoop.begin(), fQuery[0]);
+	fClausesLoop.insert(fClausesLoop.begin(), fQuery);
 
 	while (fClausesLoop.size() != 0)
 	{
