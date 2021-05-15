@@ -3,7 +3,7 @@
 //#include "TruthTable.h"
 #include "ForwardChaining.h"
 #include "BackwardChaining.h"
-#include "TT.h"
+#include "TruthTable.h"
 
 /*
     Authors: Lane Macdonald (101614172) & Edward Astbury (102579434)
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     // testing implementation
     if (lMethod == "TT")
     {
-        TT TT(lFile.GetClauses(), lFile.GetQuery(), lFile.GetSymbols(), lFile.GetSubClauses());
+        TruthTable TT(lFile.GetClauses(), lFile.GetQuery(), lFile.GetSymbols(), lFile.GetSubClauses());
     }
     else if (lMethod == "FC")
     {

@@ -1,40 +1,41 @@
 #include "TruthTable.h"
 #include <cmath>
 #include <iostream>
-#include <vector>
 
-/*
 using namespace std;
 
-TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
+struct sLogicalConnective
+{
+	string IMPLICATION = "=>";
+	string AND = "&";
+}; sLogicalConnective sLogicConnective;
+
+TruthTable::TruthTable(std::vector<std::string> aClauses, std::string aQuery, std::vector<std::string> aSymbols, std::vector<std::string> aSubClause)
 {
 	fClauses = aClauses;
 	fQuery = aQuery;
-	GetQuery(fQuery[0]);
-	SolveTable();
-	AddVariables();
-	Sort();
-	GenerateTable(pow(2, fVariables.size()), fVariables.size());
-	//PrintTTVar();
-	PrintVar();
-	//PrintClauses();
-	PrintAndSubClause();
-	DevelopKnowledgeBase();
-	PrintKB();
-	Query();
+	fSymbols = aSymbols;
+	fSubClauses = aSubClause;
+	TestTT();
 }
 
-void TruthTable::GenerateTable(int aNumberOfOptions, int aSize)
+void TruthTable::TestTT()
 {
-	int count = 0;
+	DevelopTT();				//Develop full TT from symbols
+	DevelopKnowledgeBase();		//Develop the KB from the clauses
+	EntailKB();					//Final Entailment solution
+}
 
-	for (int i = 0; i < aNumberOfOptions; i++)
+void TruthTable::DevelopTT()
+{
+	//generate full Truthtable
+	for (int i = 0; i < pow(2, fSymbols.size()); i++)
 	{
 		vector<bool> lVar = {};
 
-		for (int j = 0; j < aSize; j++)
+		for (int j = 0; j < fSymbols.size(); j++)
 		{
-			int v = i & 1 << aSize - 1 - j;
+			int v = i & 1 << fSymbols.size() - 1 - j;
 
 			if (v == 0)
 			{
@@ -46,41 +47,106 @@ void TruthTable::GenerateTable(int aNumberOfOptions, int aSize)
 			}
 		}
 
-		fTTvariables.push_back(lVar);
-		count++;
+		fModels.push_back(lVar);
 	}
-	cout << count << endl;
 }
 
-void TruthTable::SolveTable()
+void TruthTable::DevelopKnowledgeBase()
 {
-	// begin by extracting the string that matches the query
-	string lQuery = GetQuery(fQuery[0]);
-	int lIndex = lQuery.find(sLogicConnective.IMPLICATION);
-
-	string lPremise;
-	string lConclusion;
-
-	if (lQuery.find(sLogicConnective.IMPLICATION))
+	int lFlag;	//Flag for & and => ie a&b=>c;  splits to put into sub KB variable
+	//map fClauses with fSymbols TT of fModels to fKB
+	for (size_t i = 0; i < fSubClauses.size(); i++)
 	{
-		cout << "Implication check" << endl;
 
-		lPremise = lQuery.substr(0, lIndex);
-		lConclusion = lQuery.substr(lIndex + sLogicConnective.IMPLICATION.length(), lQuery.length());
+		//map values to KB
+		lFlag = 0;
+		vector<bool> lVar = {};
+		string lLHS = "";						//left variable from clause
+		string lRHS = "";						//right variable from clause
+		string lClauseVar = fSubClauses[i];		//Sub clause
+		int lLocationLeft = 0;					//location of lLHS in TT developed
+		int lLocationRight = 0;					//location of lRHS in TT developed
+		int lSingleLocation = 0;				//location of a single variable
 
-		cout << "Premise: " << lPremise << " Conclusion: " << lConclusion << endl;
+		if (lClauseVar.find(sLogicConnective.IMPLICATION) != string::npos)
+		{
+			size_t lIndex = lClauseVar.find(sLogicConnective.IMPLICATION);
+			lLHS = lClauseVar.substr(0, lIndex);
+			lRHS = lClauseVar.substr(lIndex + 2);
+		}
+		else if (lClauseVar.find(sLogicConnective.AND) != string::npos)
+		{
+			lFlag = 1;
+			size_t lIndex = lClauseVar.find(sLogicConnective.AND);
+			lLHS = lClauseVar.substr(0, lIndex);
+			lRHS = lClauseVar.substr(lIndex + 1);
+		}
+
+		//Mapping location finding for left and right variables
+		if (lLHS != "" && lRHS != "")
+		{
+			for (int t = 0; t < fSymbols.size(); t++)
+			{
+				if (fSymbols[t] == lLHS)
+				{
+					lLocationLeft = t;
+				}
+				if (fSymbols[t] == lRHS)
+				{
+					lLocationRight = t;
+				}
+			}
+		}
+		//mapping for a single variable loaction
+		else
+		{
+			for (int t = 0; t < fSymbols.size(); t++)
+			{
+				if (lClauseVar == fSymbols[t])
+				{
+					lSingleLocation = t;
+				}
+			}
+		}
+
+		//Main algorithm to develop KB
+		for (int j = 0; j < pow(2, fSymbols.size()); j++)
+		{
+			if (lLHS != "" && lRHS != "")
+			{
+				if (lClauseVar.find(sLogicConnective.AND) != string::npos)
+				{
+					string varTemp = lClauseVar;
+					size_t lIndex = varTemp.find(sLogicConnective.AND);
+					varTemp = lClauseVar.substr(lIndex + 1);
+
+					//if a&b=>c
+					if (varTemp.find(sLogicConnective.IMPLICATION) != string::npos)
+					{
+						lVar.push_back(Implication(fSubKB[i - 1][j], fModels[j][lLocationRight]));
+					}
+					//a&b
+					else
+					{
+						lVar.push_back(Amp(fModels[j][lLocationLeft], fModels[j][lLocationRight]));
+					}
+				}
+				else if (lClauseVar.find(sLogicConnective.IMPLICATION) != string::npos)
+				{
+					lVar.push_back(Implication(fModels[j][lLocationLeft], fModels[j][lLocationRight]));
+				}
+			}
+			else
+			{
+				lVar.push_back(fModels[j][lSingleLocation]);
+			}
+		}
+		if (lFlag == 0)
+		{
+			fKB.push_back(lVar);
+		}
+		fSubKB.push_back(lVar);
 	}
-
-	int lTempCount = 1;
-
-	if (lPremise.length() > 2)
-	{
-		lTempCount++;
-	}
-
-	int lNumberOfSymbols = lTempCount + lConclusion.length();
-
-	//GenerateTable();
 }
 
 bool TruthTable::Implication(bool aLHS, bool aRHS)
@@ -103,300 +169,45 @@ bool TruthTable::Amp(bool aLHS, bool aRHS)
 		return false;
 }
 
-string TruthTable::GetQuery(string aQuery)
-{
-	for (string& s : fClauses)
-	{
-		if (s.find(aQuery) != string::npos)
-		{
-			//std::cout << s << endl;
-			return s;
-		}
-	}
-}
-
-void TruthTable::AddVariables()
-{
-	for (string& s : fClauses)
-	{
-		bool complete = false;
-		string var = s;
-		string subVar = s;
-
-		//GetAndSubClause(s);
-		subVar = GetAndSubClause(subVar);
-
-		if (subVar != "")
-		{
-			fSubClauses.push_back(subVar);
-		}
-
-		while (!complete)
-		{
-			var = CheckAmpersand(var);
-			var = CheckImplication(var);
-			if (CheckAmpersand(var) == CheckImplication(var))
-			{
-				fVariables.push_back(var);
-				complete = true;
-			}
-		}
-
-		fSubClauses.push_back(s);
-	}
-}
-
-string TruthTable::CheckAmpersand(string& aString)
-{
-	string var = aString;
-
-	if (aString.find(sLogicConnective.AND) != string::npos)
-	{
-		size_t lIndex = aString.find(sLogicConnective.AND);
-		var = aString.substr(0, lIndex);
-		fVariables.push_back(var);
-		var = aString.substr(lIndex + 1);
-	}
-
-	return var;
-}
-
-string TruthTable::CheckImplication(string& aString)
-{
-	string var = aString;
-
-	if (aString.find(sLogicConnective.IMPLICATION) != string::npos)
-	{
-		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);	
-		var = aString.substr(0, lIndex);
-		fVariables.push_back(var);
-		var = aString.substr(lIndex + 2);
-	}
-
-	return var;
-}
-
-std::string TruthTable::GetAndSubClause(std::string& aString)
-{
-	string var = aString;
-
-	// if the string contains a '&' then we want the entire string prior to the '=>'
-	if (aString.find(sLogicConnective.AND) != string::npos)
-	{
-		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
-		var = aString.substr(0, lIndex);
-
-		return var;
-	}
-
-	return "";
-}
-
-void TruthTable::Sort()
-{
-	// delete multiple elements of the same type in fVariables
-	for (int i = 0; i < fVariables.size(); i++)
-	{
-		for (int j = 1 + i; j < fVariables.size(); j++)
-		{
-			if (fVariables[i] == fVariables[j])
-			{
-				fVariables.erase(fVariables.begin() + j);
-			}
-		}
-	}
-}
-
-void TruthTable::PrintVar()
-{
-	cout << "\n\nfVariables\n";
-	for (string& s : fVariables)
-	{
-cout << s << endl;
-	}
-}
-
-void TruthTable::PrintTTVar()
-{
-	for (int i = 0; i < pow(2, fVariables.size()); i++)
-	{
-		for (int j = 0; j < fVariables.size(); j++)
-		{
-			cout << fTTvariables[i][j];
-		}
-		cout << "\n";
-	}
-}
-
-void TruthTable::DevelopKnowledgeBase()
-{
-	//map fTTVariable with fSubclauses to the fVariable order
-	for (size_t i = 0; i < fSubClauses.size(); i++)
-	{
-		//map values to KB
-		vector<bool> lVar = {};
-		string lLHS = "";
-		string lRHS = "";
-		string var = &fSubClauses[i][0];
-		int lLocationLeft = 0;
-		int lLocationRight = 0;
-		int lSingleLocation = 0;
-
-		if (var.find(sLogicConnective.IMPLICATION) != string::npos)
-		{
-			size_t lIndex = var.find(sLogicConnective.IMPLICATION);
-			lLHS = var.substr(0, lIndex);
-			lRHS = var.substr(lIndex + 2);
-		}
-		else if (var.find(sLogicConnective.AND) != string::npos)
-		{
-			size_t lIndex = var.find(sLogicConnective.AND);
-			lLHS = var.substr(0, lIndex);
-			lRHS = var.substr(lIndex + 1);
-		}
-		else
-		{
-			cout << var << endl;
-		}
-		if (lLHS != "" && lRHS != "")
-		{
-			for (int t = 0; t < fVariables.size(); t++)
-			{
-				if (fVariables[t] == lLHS)
-				{
-					lLocationLeft = t;
-				}
-				if (fVariables[t] == lRHS)
-				{
-					lLocationRight = t;
-				}
-			}
-		}
-		else
-		{
-			for (int t = 0; t < fVariables.size(); t++)
-			{
-				if (var == fVariables[t])
-				{
-					lSingleLocation = t;
-				}
-			}
-		}
-
-		for (size_t j = 0; j < pow(2, fVariables.size()); j++)
-		{
-			if (lLHS != "" && lRHS != "")
-			{
-				if (var.find(sLogicConnective.AND) != string::npos)
-				{
-					string varTemp = var;
-					size_t lIndex = varTemp.find(sLogicConnective.AND);
-					varTemp = var.substr(lIndex + 1);
-
-					//if a&b=>c
-					if (varTemp.find(sLogicConnective.IMPLICATION) != string::npos)
-					{
-						lVar.push_back(Implication(fKB[i - 1][j], fTTvariables[j][lLocationRight]));
-					}
-					//a&b
-					else
-					{
-						lVar.push_back(Amp(fTTvariables[j][lLocationLeft], fTTvariables[j][lLocationRight]));
-					}
-				}
-				else if (var.find(sLogicConnective.IMPLICATION) != string::npos)
-				{
-					lVar.push_back(Implication(fTTvariables[j][lLocationLeft], fTTvariables[j][lLocationRight]));
-				}
-			}
-			else
-			{
-				lVar.push_back(fTTvariables[j][lSingleLocation]);
-			}
-		}
-			fKB.push_back(lVar);
-	}
-}
-
-void TruthTable::PrintAndSubClause()
-{
-	cout << "\n\nsubclauses\n";
-	for (string& s : fSubClauses)
-	{
-		cout << "Sub clauses including AND part of string in loop " << s << endl;
-	}
-}
-
-void TruthTable::PrintClauses()
-{
-	cout << "clauses\n";
-	for (int i = 0; i < fClauses.size(); i++)
-	{
-		cout << fClauses[i] << "  ";
-	}
-	cout << "\n\n";
-}
-
-void TruthTable::PrintKB()
+void TruthTable::EntailKB()
 {
 	int count = 0;
-	cout << "KB size: " << fKB.size() << "\tfVariables size: " << pow(2, fVariables.size()) << "\n\n\n";
-	cout << "KB\t\t\tTT\n\n";
-	
-	for (int i = 0; i < pow(2, fVariables.size()); i++)
+	int lQueryLocation = 0;
+
+	//Locate query position
+	for (int i = 0; i < fSymbols.size(); i++)
 	{
-		for (int j = 0; j < fSubClauses.size(); j++)
+		if (fQuery == fSymbols[i])
 		{
-			cout << fKB[j][i];
+			lQueryLocation = i;
 		}
-		cout << "\t\t";
-		for (int j = 0; j < fVariables.size(); j++)
-		{
-			cout << fTTvariables[i][j];
-		}
-		cout << "\n";
-		count++;
 	}
-	cout << "count:\t" << count << endl;
+
+	//Run through KB and determine entailment
+	for (int i = 0; i < pow(2, fModels[0].size()); i++)
+	{
+		bool infer{};
+		infer = fKB[0][i];
+		for (int j = 1; j <= fKB.size() - 1; j++)
+		{
+			infer = Amp(infer, fKB[j][i]);
+		}
+
+		if (infer == true)
+		{
+			if (fModels[i][lQueryLocation] == true)
+			{
+				count++;		//Count how many entail clauses
+			}
+		}
+	}
+
+	if (count > 0)
+	{
+		cout << "YES:\t" << count << "\n\n";
+	}
+	else
+	{
+		cout << "No:\n\n";
+	}
 }
-
-void TruthTable::Query()
-{
-	string lQuery = fQuery[0];
-
-	cout << "Query\t" << lQuery << endl;
-	int lLocation = 0;
-	for (int i = 0; i < fVariables.size(); i++)
-	{
-		if (lQuery == fVariables[i])
-		{
-			lLocation = i;
-			cout << "i\t" << i << " " << fVariables[i] << endl;
-		}
-	}
-	int count = 0;
-	bool lQ;
-	lLocation = 7;	//*******************
-	for (int j = 0; j < fVariables.size(); j++)
-	{
-		if (fSubClauses[j] == fQuery[0])
-		{
-			lLocation = 7;	//*******************
-			cout << "loc = " << j << endl;
-		}
-	}
-
-	for (int i = 0; i < pow(2, fVariables.size()); i++)
-	{
-		//MANUALLY ENTERED POSITION INSTEAD OF SEARCHED!!!!!!!!!!!
-		lQ = fKB[lLocation][i];	//d = 7
-		
-		if (lQ)
-		{
-			count++;
-		}
-		
-	}
-	cout << count << "\tYES:\t" << count / (pow(2,9)) << endl;
-}
-*/
