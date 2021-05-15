@@ -3,8 +3,9 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
 /*
+using namespace std;
+
 TruthTable::TruthTable(vector<string> aClauses, vector<string> aQuery)
 {
 	fClauses = aClauses;
@@ -253,7 +254,7 @@ void TruthTable::DevelopKnowledgeBase()
 			lLHS = var.substr(0, lIndex);
 			lRHS = var.substr(lIndex + 1);
 		}
-/*		else
+		else
 		{
 			cout << var << endl;
 		}
@@ -322,7 +323,7 @@ void TruthTable::PrintAndSubClause()
 	cout << "\n\nsubclauses\n";
 	for (string& s : fSubClauses)
 	{
-		cout << /*"Sub clauses including AND part of string in loop " << s << endl;
+		cout << "Sub clauses including AND part of string in loop " << s << endl;
 	}
 }
 

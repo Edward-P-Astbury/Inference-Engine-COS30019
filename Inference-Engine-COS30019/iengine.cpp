@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     // testing implementation
     if (lMethod == "TT")
     {
-        TT TT(lFile.GetClauses(), lFile.GetQuery(), lFile.GetSymbols());
+        TT TT(lFile.GetClauses(), lFile.GetQuery(), lFile.GetSymbols(), lFile.GetSubClauses());
     }
     else if (lMethod == "FC")
     {

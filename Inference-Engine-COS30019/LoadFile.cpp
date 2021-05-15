@@ -57,17 +57,24 @@ void LoadFile::ReadFile()
 void LoadFile::Set()
 {
 	AddVariables();
+	fSymbols.push_back(fQuery);	//add query to the list of symbols
+	Sort();
 	Sort();
 }
 
-std::vector<std::string> LoadFile::GetClauses()
+vector<string> LoadFile::GetClauses()
 {
 	return fClauses;
 }
 
-std::string LoadFile::GetQuery()
+string LoadFile::GetQuery()
 {
 	return fQuery;
+}
+
+vector<string> LoadFile::GetSubClauses()
+{
+	return fSubClauses;
 }
 
 std::vector<std::string> LoadFile::GetSymbols()
@@ -81,9 +88,14 @@ void LoadFile::AddVariables()
 	{
 		bool complete = false;
 		string lvar = s;
-		string lsubVar = s;
+		string lSubVar = s;
 
-		lsubVar = GetAndSubClause(lsubVar);
+		lSubVar = GetAndSubClause(lSubVar);
+
+		if (lSubVar != "")
+		{
+			fSubClauses.push_back(lSubVar);
+		}
 
 		while (!complete)
 		{
@@ -95,6 +107,8 @@ void LoadFile::AddVariables()
 				complete = true;
 			}
 		}
+
+		fSubClauses.push_back(s);
 	}
 }
 
