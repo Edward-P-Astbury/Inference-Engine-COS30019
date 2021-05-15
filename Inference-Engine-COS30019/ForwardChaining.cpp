@@ -38,7 +38,7 @@ std::string ForwardChaining::FactOutput()
 	}
 	else
 	{
-		//lPrintResult = "NO: " + fQuery[0] + " could not be proven.";
+		lPrintResult = "NO: " + fQuery + " could not be proven.";
 	}
 
 	return lPrintResult;
@@ -69,35 +69,78 @@ bool ForwardChaining::FactValidation()
 			{
 				if(fHornClause[i].find(sLogicConnectiveFC.AND) != string::npos)
 				{
+					// if the clause we are checking already has facts which are part of the list of facts there is no need to extend down this path
+					// therefore we can delete the clause from the list of clauses
+					string lTempCheck;
+
+					size_t lIndexCheck = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+					lTempCheck = fHornClause[i].substr(lIndexCheck + 2); // value after implication
+
+					for (int j = 0; j < fResultFacts.size(); j++)
+					{
+						if (fResultFacts[j] == lTempCheck)
+						{
+							fHornClause.erase(fHornClause.begin() + i);
+							break; ///// this break may not be necessary, need to conduct more tests...
+						}
+					}
+
 					size_t lIndexAnd = fHornClause[i].find(sLogicConnectiveFC.AND);
 
-					string lTemp = fHornClause[i].substr(lIndexAnd + 1);
+					string lTempValueAfterAnd = fHornClause[i].substr(lIndexAnd + 1);
 
-					size_t lIndexImplication = lTemp.find(sLogicConnectiveFC.IMPLICATION);
+					size_t lIndexImplication = lTempValueAfterAnd.find(sLogicConnectiveFC.IMPLICATION);
 
-					lTemp = lTemp.substr(0, lIndexImplication);
+					lTempValueAfterAnd = lTempValueAfterAnd.substr(0, lIndexImplication);
+
+					string lTempValueBeforeAnd = fHornClause[i].substr(0, lIndexAnd);
 
 					// say we have the string 'b&e=>f', it has now been trimmed to the value after the '&', in this case 'e'
 					// 
 					// need to check whether the value after the '&', in this case 'e' is part of the current facts. 
 					// If it is, then we can push back 'f', the value after the implication into the list of facts.
-					// We are then done with that particular horn clause (it has been checked) therefore we can erase it
-					for (int j = 0; j < fFacts.size(); j++)
+					// We are then done with that particular horn clause (it has been checked) therefore we can erase it.
+					// This logic also applies for the value prior to the '&'.
+					for (int j = 0; j < fResultFacts.size(); j++)
 					{
-						if (fFacts[j] == lTemp)
+						if (fResultFacts[j] == lTempValueAfterAnd)
 						{
-							string lTempImplication;
+							for (int k = 0; k < fResultFacts.size(); k++)
+							{
+								if (fResultFacts[k] == lTempValueBeforeAnd)
+								{
+									string lTempImplication;
 
-							size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
-							lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
+									size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+									lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
 
-							fHornClause.erase(fHornClause.begin() + i);
-							fFacts.push_back(lTempImplication);
+									fHornClause.erase(fHornClause.begin() + i);
+									fFacts.push_back(lTempImplication);
+
+									break;
+								}
+							}
 						}
 					}
 				}
 				else
 				{
+					// if the clause we are checking already has facts which are part of the list of facts there is no need to extend down this path
+					// therefore we can delete the clause from the list of clauses
+					string lTempCheck;
+
+					size_t lIndexCheck = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+					lTempCheck = fHornClause[i].substr(lIndexCheck + 2); // value after implication
+
+					for (int j = 0; j < fResultFacts.size(); j++)
+					{
+						if (fResultFacts[j] == lTempCheck)
+						{
+							fHornClause.erase(fHornClause.begin() + i);
+							break; ///// this break may not be necessary, need to conduct more tests...
+						}
+					}
+
 					size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
 
 					// ensure the value being checked occurs before the implication
@@ -113,9 +156,9 @@ bool ForwardChaining::FactValidation()
 						// delete clause from vector once we satisfy it
 						fHornClause.erase(fHornClause.begin() + i);
 
-						//cout << "Value added: " << lTemp << endl;
-
 						fFacts.push_back(lTemp);
+
+						break;
 					}
 				}
 			}
