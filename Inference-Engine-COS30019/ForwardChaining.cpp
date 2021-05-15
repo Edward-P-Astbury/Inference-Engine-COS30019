@@ -93,26 +93,33 @@ bool ForwardChaining::FactValidation()
 
 					lTempValueAfterAnd = lTempValueAfterAnd.substr(0, lIndexImplication);
 
-					//string lTempValueBeforeAnd = fHornClause[i].substr(0, lIndexAnd);
+					string lTempValueBeforeAnd = fHornClause[i].substr(0, lIndexAnd);
 
 					// say we have the string 'b&e=>f', it has now been trimmed to the value after the '&', in this case 'e'
 					// 
 					// need to check whether the value after the '&', in this case 'e' is part of the current facts. 
 					// If it is, then we can push back 'f', the value after the implication into the list of facts.
-					// We are then done with that particular horn clause (it has been checked) therefore we can erase it
+					// We are then done with that particular horn clause (it has been checked) therefore we can erase it.
+					// This logic also applies for the value prior to the '&'.
 					for (int j = 0; j < fResultFacts.size(); j++)
 					{
 						if (fResultFacts[j] == lTempValueAfterAnd)
 						{
-							string lTempImplication;
+							for (int k = 0; k < fResultFacts.size(); k++)
+							{
+								if (fResultFacts[k] == lTempValueBeforeAnd)
+								{
+									string lTempImplication;
 
-							size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
-							lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
+									size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+									lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
 
-							fHornClause.erase(fHornClause.begin() + i);
-							fFacts.push_back(lTempImplication);
+									fHornClause.erase(fHornClause.begin() + i);
+									fFacts.push_back(lTempImplication);
 
-							break;
+									break;
+								}
+							}
 						}
 					}
 				}
