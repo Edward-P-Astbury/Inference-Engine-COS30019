@@ -143,14 +143,12 @@
     <ClCompile Include="iengine.cpp" />
     <ClCompile Include="LoadFile.cpp" />
     <ClCompile Include="TruthTable.cpp" />
-    <ClCompile Include="TT.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BackwardChaining.h" />
     <ClInclude Include="ForwardChaining.h" />
     <ClInclude Include="LoadFile.h" />
     <ClInclude Include="TruthTable.h" />
-    <ClInclude Include="TT.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="test_genericKB.txt" />
