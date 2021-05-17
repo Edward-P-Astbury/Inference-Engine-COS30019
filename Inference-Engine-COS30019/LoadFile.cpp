@@ -17,7 +17,7 @@ LoadFile::LoadFile(std::string aFileName)
 
 void LoadFile::ReadFile()
 {
-	string lClause, lTempClause, lTell;
+	string lClause, lTempClause, lTell, lQuery;
 	ifstream lInFile;
 	lInFile.open(fFileName);
 
@@ -49,8 +49,8 @@ void LoadFile::ReadFile()
 
 	while (!lInFile.eof())
 	{
-		lInFile >> lTell;
-		fQuery = lTell;
+		lInFile >> lQuery;
+		fQuery = lQuery;
 	}
 }
 
@@ -92,11 +92,11 @@ void LoadFile::AddVariables()
 
 		lSubVar = GetAndSubClause(lSubVar);
 
-		if (lSubVar != "")
+		if (lSubVar != "" && lSubVar != s)
 		{
 			fSubClauses.push_back(lSubVar);
 		}
-
+		
 		while (!complete)
 		{
 			lvar = CheckAmpersand(lvar);

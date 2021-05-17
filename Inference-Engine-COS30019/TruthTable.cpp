@@ -53,13 +53,15 @@ void TruthTable::DevelopTT()
 
 void TruthTable::DevelopKnowledgeBase()
 {
-	int lFlag;	//Flag for & and => ie a&b=>c;  splits to put into sub KB variable
+	int lFlag;			//Flag for & and => ie a&b=>c;  splits to put into sub KB variable
+	int lClauseCount = -1;	//Count for case when clause is simply an ampesand clause. ie. a&b	
 	//map fClauses with fSymbols TT of fModels to fKB
 	for (size_t i = 0; i < fSubClauses.size(); i++)
 	{
 
 		//map values to KB
 		lFlag = 0;
+		lClauseCount++;
 		vector<bool> lVar = {};
 		string lLHS = "";						//left variable from clause
 		string lRHS = "";						//right variable from clause
@@ -145,6 +147,12 @@ void TruthTable::DevelopKnowledgeBase()
 		{
 			fKB.push_back(lVar);
 		}
+		//Allow for if single & in clause. ie a&b
+		if (lFlag == 1 && fClauses[i] == fSubClauses[lClauseCount])
+		{
+			fKB.push_back(lVar);
+		}
+
 		fSubKB.push_back(lVar);
 	}
 }
@@ -177,6 +185,10 @@ void TruthTable::EntailKB()
 	//Locate query position
 	for (int i = 0; i < fSymbols.size(); i++)
 	{
+		if (fQuery == "")
+		{
+			break;
+		}
 		if (fQuery == fSymbols[i])
 		{
 			lQueryLocation = i;
@@ -201,10 +213,13 @@ void TruthTable::EntailKB()
 			}
 		}
 	}
-
-	if (count > 0)
+	if (fQuery == "")
 	{
-		cout << "YES:\t" << count << "\n\n";
+		cout << "There is no query to test\n\n";
+	}
+	else if (count > 0)
+	{
+		cout << "YES: " << count << "\n\n";
 	}
 	else
 	{
