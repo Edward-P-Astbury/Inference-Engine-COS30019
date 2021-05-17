@@ -38,7 +38,7 @@ std::string BackwardChaining::FactOutput()
 	}
 	else
 	{
-		//lPrintResult = "NO: " + fQuery[0] + " could not be proven.";
+		lPrintResult = "NO: " + fQuery + " could not be proven.";
 	}
 
 	return lPrintResult;
@@ -46,6 +46,12 @@ std::string BackwardChaining::FactOutput()
 
 bool BackwardChaining::FactValidation()
 {
+	// TODO: Wait on Bao's email response, but from my understanding if there is no facts then we cannot initiate the BC algorithm, therefore we return false
+	if (fFacts.empty() == true)
+	{
+		return false;
+	}
+
 	string lInitialQuery;
 
 	for (int i = 0; i < fHornClause.size(); i++)
@@ -55,7 +61,7 @@ bool BackwardChaining::FactValidation()
 		size_t lIndex = fHornClause[i].find(sLogicConnectiveBC.IMPLICATION);
 		lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
 
-		if (lTempImplication.find(fQuery[0]) != string::npos)
+		if (lTempImplication.find(fQuery) != string::npos)
 		{
 			lInitialQuery = fHornClause[i];
 		}
@@ -77,6 +83,16 @@ bool BackwardChaining::FactValidation()
 	// place the initial query into the list
 	fClausesLoop.insert(fClausesLoop.begin(), fQuery);
 
+	for (string& s : fFacts)
+	{
+		if (s.find(fQuery) != string::npos) // TODO: Once we get confirmation from Bao this can be called outside the core loop and can be used just for the initial query 'fQuery'
+		{
+			//cout << "Found the fact!" << endl;
+			fResultFacts.push_back(fQuery);
+			return true;
+		}
+	}
+
 	while (fClausesLoop.size() != 0)
 	{
 		// assign local variable then pop off the first variable from vector
@@ -85,6 +101,18 @@ bool BackwardChaining::FactValidation()
 
 		// add the variable to the result vector if it is true
 		fResultFacts.push_back(lQuery);
+
+		// stop the algorithm once the query is part of the facts
+		/*
+		for (string& s : fFacts)
+		{
+			if (s.find(lQuery) != string::npos) // TODO: Once we get confirmation from Bao this can be called outside the core loop and can be used just for the initial query 'fQuery'
+			{
+				cout << "Found the fact!" << endl;
+				return true;
+			}
+		}
+		*/
 
 		for (int i = 0; i < fHornClause.size(); i++)
 		{
@@ -95,16 +123,74 @@ bool BackwardChaining::FactValidation()
 
 			if (lTempImplication.find(lQuery) != string::npos)
 			{
-				// now we need to extract the value before the implication and then we can delete that element from the list of clauses
+				if (fHornClause[i].find(sLogicConnectiveBC.AND) != string::npos)
+				{
+					size_t lIndexAnd = fHornClause[i].find(sLogicConnectiveBC.AND);
 
-				size_t lIndex = fHornClause[i].find(sLogicConnectiveBC.IMPLICATION);
+					string lTempValueAfterAnd = fHornClause[i].substr(lIndexAnd + 1);
 
-				// ensure the value being checked occurs before the implication
-				string lClauseBeforeImplication = fHornClause[i].substr(0, lIndex);
+					size_t lIndexImplication = lTempValueAfterAnd.find(sLogicConnectiveBC.IMPLICATION);
 
-				fHornClause.erase(fHornClause.begin() + i); // erase element from the vector of clauses once it has been checked 
+					lTempValueAfterAnd = lTempValueAfterAnd.substr(0, lIndexImplication);
 
-				fClausesLoop.insert(fClausesLoop.begin(), lClauseBeforeImplication); // add the newly acquired value
+					string lTempValueBeforeAnd = fHornClause[i].substr(0, lIndexAnd);
+
+					for (int j = 0; j < fFacts.size(); j++)
+					{
+						if (lTempValueAfterAnd == fFacts[j] && lTempValueBeforeAnd != fFacts[j])
+						{
+							// push on the value before
+							fHornClause.erase(fHornClause.begin() + i);
+
+							fClausesLoop.insert(fClausesLoop.begin(), lTempValueBeforeAnd);
+
+							break; // we can now break once we have added the value
+						}
+						if (lTempValueBeforeAnd == fFacts[j] && lTempValueAfterAnd != fFacts[j]) // check for the other condition
+						{
+							fHornClause.erase(fHornClause.begin() + i);
+
+							fClausesLoop.insert(fClausesLoop.begin(), lTempValueAfterAnd);
+
+							break;
+						}
+						if (lTempValueBeforeAnd != fFacts[j] && lTempValueAfterAnd != fFacts[j])
+						{
+							// we will begin with iterating down the value before the '&', thus we will push it on first
+							fHornClause.erase(fHornClause.begin() + i);
+
+							fClausesLoop.insert(fClausesLoop.begin(), lTempValueAfterAnd);
+							fClausesLoop.insert(fClausesLoop.begin(), lTempValueBeforeAnd);
+
+							break;
+						}
+					}
+				}
+				else
+				{
+					// now we need to extract the value before the implication and then we can delete that element from the list of clauses
+
+					size_t lIndex = fHornClause[i].find(sLogicConnectiveBC.IMPLICATION);
+
+					// ensure the value being checked occurs before the implication
+					string lClauseBeforeImplication = fHornClause[i].substr(0, lIndex);
+
+					fHornClause.erase(fHornClause.begin() + i); // erase element from the vector of clauses once it has been checked
+
+					fClausesLoop.insert(fClausesLoop.begin(), lClauseBeforeImplication); // add the newly acquired value
+				}
+			}
+		}
+	}
+
+	// Clear duplicate values, this prevents the algorithm from searching for any more facts that have already been explored
+	for (int i = 0; i < fResultFacts.size(); i++)
+	{
+		for (int j = i + 1; j < fResultFacts.size(); j++)
+		{
+			if (fResultFacts[i] == fResultFacts[j])
+			{
+				fResultFacts.erase(fResultFacts.begin() + j);
 			}
 		}
 	}
