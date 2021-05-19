@@ -115,7 +115,8 @@ bool ForwardChaining::FactValidation()
 									lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
 
 									fHornClause.erase(fHornClause.begin() + i);
-									fFacts.push_back(lTempImplication);
+									//fFacts.push_back(lTempImplication);
+									fFacts.insert(fFacts.begin(), lTempImplication);
 
 									break;
 								}
@@ -156,7 +157,8 @@ bool ForwardChaining::FactValidation()
 						// delete clause from vector once we satisfy it
 						fHornClause.erase(fHornClause.begin() + i);
 
-						fFacts.push_back(lTemp);
+						//fFacts.push_back(lTemp);
+						fFacts.insert(fFacts.begin(), lTemp);
 
 						break;
 					}
