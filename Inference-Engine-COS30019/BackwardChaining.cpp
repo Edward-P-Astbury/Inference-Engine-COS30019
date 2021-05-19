@@ -27,13 +27,17 @@ std::string BackwardChaining::FactOutput()
 	{
 		lPrintResult = "> YES: ";
 
-		// traverse vector backwards
-		for (int i = fResultFacts.size() - 1; i >= 0; i--)
+		// reverse the vector for printing
+		reverse(fResultFacts.begin(), fResultFacts.end());
+
+		for (int i = 0; i < fResultFacts.size(); i++)
 		{
 			lPrintResult += fResultFacts[i];
 
-			if (i != 0)
+			if (i < fResultFacts.size() - 1)
+			{
 				lPrintResult += ", ";
+			}
 		}
 	}
 	else
