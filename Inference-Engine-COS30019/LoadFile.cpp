@@ -94,19 +94,17 @@ void LoadFile::AddVariables()
 
 		if (lSubVar != "" && lSubVar != s)
 		{
-			fSubClauses.push_back(lSubVar);
-		}
-		
-		while (!complete)
-		{
-			lvar = CheckAmpersand(lvar);
-			lvar = CheckImplication(lvar);
-			if (CheckAmpersand(lvar) == CheckImplication(lvar))
+			//check for multiple &'s
+			while (lSubVar.find(sLogicConnective.AND) != string::npos)
 			{
-				fSymbols.push_back(lvar);
-				complete = true;
+				//Trim each statement before &
+				lSubVar = CheckAmpersand(lSubVar);
 			}
+			fSymbols.push_back(lSubVar);
 		}
+
+		lvar = CheckImplication(lvar);
+		fSymbols.push_back(lvar);
 
 		fSubClauses.push_back(s);
 	}
@@ -134,8 +132,6 @@ string LoadFile::CheckImplication(string& aString)
 	if (aString.find(sLogicConnective.IMPLICATION) != string::npos)
 	{
 		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
-		var = aString.substr(0, lIndex);
-		fSymbols.push_back(var);
 		var = aString.substr(lIndex + 2);
 	}
 
@@ -151,6 +147,7 @@ std::string LoadFile::GetAndSubClause(std::string& aString)
 	{
 		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
 		var = aString.substr(0, lIndex);
+		fSubClauses.push_back(var);
 
 		return var;
 	}
