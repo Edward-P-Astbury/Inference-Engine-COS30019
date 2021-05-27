@@ -1,14 +1,11 @@
 #include "LoadFile.h"
 #include <iostream>
 #include <fstream>
+#include "LogicalConnectives.h"
+
+static sLogicalConnectives sLogicalConnective;
 
 using namespace std;
-
-struct sLogicalConnectives
-{
-	string IMPLICATION = "=>";
-	string AND = "&";
-}; sLogicalConnectives sLogicConnective;
 
 LoadFile::LoadFile(std::string aFileName)
 {
@@ -95,7 +92,7 @@ void LoadFile::AddVariables()
 		if (lSubVar != "" && lSubVar != s)
 		{
 			//check for multiple &'s
-			while (lSubVar.find(sLogicConnective.AND) != string::npos)
+			while (lSubVar.find(sLogicalConnective.AND) != string::npos)
 			{
 				//Trim each statement before &
 				lSubVar = CheckAmpersand(lSubVar);
@@ -114,9 +111,9 @@ string LoadFile::CheckAmpersand(string& aString)
 {
 	string var = aString;
 
-	if (aString.find(sLogicConnective.AND) != string::npos)
+	if (aString.find(sLogicalConnective.AND) != string::npos)
 	{
-		size_t lIndex = aString.find(sLogicConnective.AND);
+		size_t lIndex = aString.find(sLogicalConnective.AND);
 		var = aString.substr(0, lIndex);
 		fSymbols.push_back(var);
 		var = aString.substr(lIndex + 1);
@@ -129,9 +126,9 @@ string LoadFile::CheckImplication(string& aString)
 {
 	string var = aString;
 
-	if (aString.find(sLogicConnective.IMPLICATION) != string::npos)
+	if (aString.find(sLogicalConnective.IMPLICATION) != string::npos)
 	{
-		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
+		size_t lIndex = aString.find(sLogicalConnective.IMPLICATION);
 		var = aString.substr(lIndex + 2);
 	}
 
@@ -143,9 +140,9 @@ std::string LoadFile::GetAndSubClause(std::string& aString)
 	string var = aString;
 
 	// if the string contains a '&' then we want the entire string prior to the '=>'
-	if (aString.find(sLogicConnective.AND) != string::npos)
+	if (aString.find(sLogicalConnective.AND) != string::npos)
 	{
-		size_t lIndex = aString.find(sLogicConnective.IMPLICATION);
+		size_t lIndex = aString.find(sLogicalConnective.IMPLICATION);
 		var = aString.substr(0, lIndex);
 		fSubClauses.push_back(var);
 

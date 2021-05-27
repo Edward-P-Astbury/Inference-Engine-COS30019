@@ -1,6 +1,5 @@
 #include <iostream>
 #include "LoadFile.h"
-//#include "TruthTable.h"
 #include "ForwardChaining.h"
 #include "BackwardChaining.h"
 #include "TruthTable.h"

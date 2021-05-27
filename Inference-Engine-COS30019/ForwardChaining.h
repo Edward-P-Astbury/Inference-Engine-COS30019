@@ -14,8 +14,7 @@ private:
 
 public:
 	ForwardChaining(std::vector<std::string> aClauses, std::string aQuery);
-	std::string FactOutput();
-	bool FactValidation();
-	void AddFactsAndHornClauses();
+	std::string FactOutput(); // Prints the resulting facts
+	bool FactValidation(); // Core algorithm
+	void AddFactsAndHornClauses(); // Seperates the facts and clauses from the text file
 };
-

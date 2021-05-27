@@ -1,13 +1,10 @@
 #include "BackwardChaining.h"
 #include <iostream>
+#include "LogicalConnectives.h"
+
+static sLogicalConnectives sLogicalConnective;
 
 using namespace std;
-
-struct sLogicalConnectives
-{
-	string IMPLICATION = "=>";
-	string AND = "&";
-}; sLogicalConnectives sLogicConnectiveBC;
 
 BackwardChaining::BackwardChaining(std::vector<std::string> aClauses, std::string aQuery)
 {
@@ -50,7 +47,7 @@ std::string BackwardChaining::FactOutput()
 
 bool BackwardChaining::FactValidation()
 {
-	// TODO: Wait on Bao's email response, but from my understanding if there is no facts then we cannot initiate the BC algorithm, therefore we return false
+	// if there is no facts then we cannot initiate the BC algorithm, therefore we return false
 	if (fFacts.empty() == true)
 	{
 		return false;
@@ -62,7 +59,7 @@ bool BackwardChaining::FactValidation()
 	{
 		string lTempImplication;
 
-		size_t lIndex = fHornClause[i].find(sLogicConnectiveBC.IMPLICATION);
+		size_t lIndex = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 		lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
 
 		if (lTempImplication.find(fQuery) != string::npos)
@@ -76,11 +73,10 @@ bool BackwardChaining::FactValidation()
 	// otherwise we can enter the core loop and proceed with the algorithm
 	if (find(fHornClause.begin(), fHornClause.end(), lInitialQuery) != fHornClause.end())
 	{
-		//cout << "found element" << endl;
+		// element is found, no need to return false
 	}
 	else
 	{
-		//cout << "cannot find element" << endl;
 		return false;
 	}
 
@@ -89,9 +85,8 @@ bool BackwardChaining::FactValidation()
 
 	for (string& s : fFacts)
 	{
-		if (s.find(fQuery) != string::npos) // TODO: Once we get confirmation from Bao this can be called outside the core loop and can be used just for the initial query 'fQuery'
+		if (s.find(fQuery) != string::npos)
 		{
-			//cout << "Found the fact!" << endl;
 			fResultFacts.push_back(fQuery);
 			return true;
 		}
@@ -106,34 +101,22 @@ bool BackwardChaining::FactValidation()
 		// add the variable to the result vector if it is true
 		fResultFacts.push_back(lQuery);
 
-		// stop the algorithm once the query is part of the facts
-		/*
-		for (string& s : fFacts)
-		{
-			if (s.find(lQuery) != string::npos) // TODO: Once we get confirmation from Bao this can be called outside the core loop and can be used just for the initial query 'fQuery'
-			{
-				cout << "Found the fact!" << endl;
-				return true;
-			}
-		}
-		*/
-
 		for (int i = 0; i < fHornClause.size(); i++)
 		{
 			string lTempImplication;
 
-			size_t lIndex = fHornClause[i].find(sLogicConnectiveBC.IMPLICATION);
+			size_t lIndex = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 			lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
 
 			if (lTempImplication.find(lQuery) != string::npos)
 			{
-				if (fHornClause[i].find(sLogicConnectiveBC.AND) != string::npos)
+				if (fHornClause[i].find(sLogicalConnective.AND) != string::npos)
 				{
-					size_t lIndexAnd = fHornClause[i].find(sLogicConnectiveBC.AND);
+					size_t lIndexAnd = fHornClause[i].find(sLogicalConnective.AND);
 
 					string lTempValueAfterAnd = fHornClause[i].substr(lIndexAnd + 1);
 
-					size_t lIndexImplication = lTempValueAfterAnd.find(sLogicConnectiveBC.IMPLICATION);
+					size_t lIndexImplication = lTempValueAfterAnd.find(sLogicalConnective.IMPLICATION);
 
 					lTempValueAfterAnd = lTempValueAfterAnd.substr(0, lIndexImplication);
 
@@ -174,7 +157,7 @@ bool BackwardChaining::FactValidation()
 				{
 					// now we need to extract the value before the implication and then we can delete that element from the list of clauses
 
-					size_t lIndex = fHornClause[i].find(sLogicConnectiveBC.IMPLICATION);
+					size_t lIndex = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 
 					// ensure the value being checked occurs before the implication
 					string lClauseBeforeImplication = fHornClause[i].substr(0, lIndex);
@@ -207,7 +190,7 @@ void BackwardChaining::AddFactsAndHornClauses()
 {
 	for (string& s : fClauses)
 	{
-		if (s.find(sLogicConnectiveBC.IMPLICATION) != string::npos)
+		if (s.find(sLogicalConnective.IMPLICATION) != string::npos)
 		{
 			// horn clause
 			fHornClause.push_back(s);

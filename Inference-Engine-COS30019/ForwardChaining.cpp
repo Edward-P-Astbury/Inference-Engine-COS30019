@@ -1,13 +1,10 @@
 #include "ForwardChaining.h"
 #include <iostream>
+#include "LogicalConnectives.h"
+
+static sLogicalConnectives sLogicalConnective;
 
 using namespace std;
-
-struct sLogicalConnectives
-{
-	string IMPLICATION = "=>";
-	string AND = "&";
-}; sLogicalConnectives sLogicConnectiveFC;
 
 ForwardChaining::ForwardChaining(std::vector<std::string> aClauses, std::string aQuery)
 {
@@ -59,7 +56,6 @@ bool ForwardChaining::FactValidation()
 		// return true if the current variable matches the query
 		if (lFact == fQuery)
 		{
-			//cout << "Variable matches query" << endl;
 			return true;
 		}
 
@@ -67,13 +63,13 @@ bool ForwardChaining::FactValidation()
 		{
 			if(fHornClause[i].find(lFact) != string::npos)
 			{
-				if(fHornClause[i].find(sLogicConnectiveFC.AND) != string::npos)
+				if(fHornClause[i].find(sLogicalConnective.AND) != string::npos)
 				{
 					// if the clause we are checking already has facts which are part of the list of facts there is no need to extend down this path
 					// therefore we can delete the clause from the list of clauses
 					string lTempCheck;
 
-					size_t lIndexCheck = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+					size_t lIndexCheck = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 					lTempCheck = fHornClause[i].substr(lIndexCheck + 2); // value after implication
 
 					for (int j = 0; j < fResultFacts.size(); j++)
@@ -81,15 +77,15 @@ bool ForwardChaining::FactValidation()
 						if (fResultFacts[j] == lTempCheck)
 						{
 							fHornClause.erase(fHornClause.begin() + i);
-							break; ///// this break may not be necessary, need to conduct more tests...
+							break;
 						}
 					}
 
-					size_t lIndexAnd = fHornClause[i].find(sLogicConnectiveFC.AND);
+					size_t lIndexAnd = fHornClause[i].find(sLogicalConnective.AND);
 
 					string lTempValueAfterAnd = fHornClause[i].substr(lIndexAnd + 1);
 
-					size_t lIndexImplication = lTempValueAfterAnd.find(sLogicConnectiveFC.IMPLICATION);
+					size_t lIndexImplication = lTempValueAfterAnd.find(sLogicalConnective.IMPLICATION);
 
 					lTempValueAfterAnd = lTempValueAfterAnd.substr(0, lIndexImplication);
 
@@ -111,11 +107,11 @@ bool ForwardChaining::FactValidation()
 								{
 									string lTempImplication;
 
-									size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+									size_t lIndex = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 									lTempImplication = fHornClause[i].substr(lIndex + 2); // value after the implication
 
 									fHornClause.erase(fHornClause.begin() + i);
-									//fFacts.push_back(lTempImplication);
+
 									fFacts.insert(fFacts.begin(), lTempImplication);
 
 									break;
@@ -130,7 +126,7 @@ bool ForwardChaining::FactValidation()
 					// therefore we can delete the clause from the list of clauses
 					string lTempCheck;
 
-					size_t lIndexCheck = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+					size_t lIndexCheck = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 					lTempCheck = fHornClause[i].substr(lIndexCheck + 2); // value after implication
 
 					for (int j = 0; j < fResultFacts.size(); j++)
@@ -138,11 +134,11 @@ bool ForwardChaining::FactValidation()
 						if (fResultFacts[j] == lTempCheck)
 						{
 							fHornClause.erase(fHornClause.begin() + i);
-							break; ///// this break may not be necessary, need to conduct more tests...
+							break;
 						}
 					}
 
-					size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+					size_t lIndex = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 
 					// ensure the value being checked occurs before the implication
 					string lClauseBeforeImplication = fHornClause[i].substr(0, lIndex);
@@ -151,13 +147,12 @@ bool ForwardChaining::FactValidation()
 					{
 						string lTemp;
 
-						size_t lIndex = fHornClause[i].find(sLogicConnectiveFC.IMPLICATION);
+						size_t lIndex = fHornClause[i].find(sLogicalConnective.IMPLICATION);
 						lTemp = fHornClause[i].substr(lIndex + 2); // value after implication
 
 						// delete clause from vector once we satisfy it
 						fHornClause.erase(fHornClause.begin() + i);
 
-						//fFacts.push_back(lTemp);
 						fFacts.insert(fFacts.begin(), lTemp);
 
 						break;
@@ -173,7 +168,7 @@ void ForwardChaining::AddFactsAndHornClauses()
 {
 	for (string& s : fClauses)
 	{
-		if (s.find(sLogicConnectiveFC.IMPLICATION) != string::npos)
+		if (s.find(sLogicalConnective.IMPLICATION) != string::npos)
 		{
 			// horn clause
 			fHornClause.push_back(s);

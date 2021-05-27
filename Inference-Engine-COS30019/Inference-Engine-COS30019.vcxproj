@@ -148,6 +148,7 @@
     <ClInclude Include="BackwardChaining.h" />
     <ClInclude Include="ForwardChaining.h" />
     <ClInclude Include="LoadFile.h" />
+    <ClInclude Include="LogicalConnectives.h" />
     <ClInclude Include="TruthTable.h" />
   </ItemGroup>
   <ItemGroup>
