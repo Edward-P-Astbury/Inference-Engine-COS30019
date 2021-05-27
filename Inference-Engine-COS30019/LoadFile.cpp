@@ -1,7 +1,7 @@
 #include "LoadFile.h"
+#include "LogicalConnectives.h"
 #include <iostream>
 #include <fstream>
-#include "LogicalConnectives.h"
 
 static sLogicalConnectives sLogicalConnective;
 

@@ -1,7 +1,7 @@
 #include "TruthTable.h"
+#include "LogicalConnectives.h"
 #include <cmath>
 #include <iostream>
-#include "LogicalConnectives.h"
 
 static sLogicalConnectives sLogicalConnective;
 

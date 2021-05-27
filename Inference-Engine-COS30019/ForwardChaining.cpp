@@ -1,6 +1,6 @@
 #include "ForwardChaining.h"
-#include <iostream>
 #include "LogicalConnectives.h"
+#include <iostream>
 
 static sLogicalConnectives sLogicalConnective;
 
